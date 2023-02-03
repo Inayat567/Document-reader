@@ -1,0 +1,13 @@
+rootProject.name = 'DocumentReader'
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+include ':app'
+includeBuild('../node_modules/react-native-gradle-plugin')
+
+if (settings.hasProperty("newArchEnabled") && settings.newArchEnabled == "true") {
+    include(":ReactAndroid")
+    project(":ReactAndroid").projectDir = file('../node_modules/react-native/ReactAndroid')
+
+    //custom additions...
+    include ':react-native-file-viewer'
+    project(':react-native-file-viewer').projectDir = new File(rootProject.projectDir, 	'../node_modules/react-native-file-viewer/android')
+}
