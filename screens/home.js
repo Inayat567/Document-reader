@@ -1,4 +1,4 @@
-import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, PermissionsAndroid } from 'react-native'
+import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, PermissionsAndroid, FlatList, } from 'react-native'
 import React, {useState, useEffect } from 'react'
 import FileViewer from 'react-native-file-viewer'
 import DocumentPicker from 'react-native-document-picker'
@@ -8,6 +8,7 @@ import Permissions from 'react-native-permissions';
 const Home = () => {
   const [permission, setPermission] = useState(null);
   const db = SQLite.openDatabase({ name: 'mydatabase.db' });
+  const [myDocuments, setMyDocuments] = useState([]);
 
  useEffect(() => {
   checkPermission();
@@ -26,6 +27,7 @@ useEffect(()=>{
       },
     );
   });
+  fetchDocument();
 }, []);
 
 
@@ -92,14 +94,17 @@ const fetchDocument = async ()=>{
       (tx, results) => {
         for (let i = 0; i < results.rows.length; i++) {
           const fileUri = results.rows.item(i).file_uri;
-          console.log(fileUri)
-          FileViewer.open(fileUri)
-            .then(() => {
-              console.log('File is opened');
-            })
-            .catch(error => {
-              console.log('Error opening file', error);
-            });
+          console.log(fileUri);
+          myDocuments.length = 0;
+          myDocuments.push(fileUri);
+          setMyDocuments(myDocuments);
+          // FileViewer.open(fileUri)
+          //   .then(() => {
+          //     console.log('File is opened');
+          //   })
+          //   .catch(error => {
+          //     console.log('Error opening file', error);
+          //   });
         }
       },
       (tx, error) => {
@@ -119,6 +124,7 @@ const openDocument = async () =>{
       console.log(e);
   }
 }
+
   return (
     <SafeAreaView style = {styles.container}>
         <Text style={styles.title}>Document Reader</Text>
@@ -127,11 +133,21 @@ const openDocument = async () =>{
        style={styles.btn}>
         <Text style={styles.btnText}>Save File</Text>
       </TouchableOpacity>
-      <TouchableOpacity
+      {console.log(typeof(myDocuments) + "   test")}
+      <FlatList 
+        data={myDocuments}
+      // key={myDocuments}
+        renderItem={(item)=>{
+          <TouchableOpacity>
+            <Text>{item.item}jgk</Text>
+          </TouchableOpacity>
+        }}
+      />
+      {/* <TouchableOpacity
       onPress={fetchDocument}
       style={styles.btn}>
         <Text style={styles.btnText}>Fetch File</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <TouchableOpacity
       onPress={openDocument}
       style={styles.btn}>
